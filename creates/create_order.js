@@ -1,5 +1,19 @@
 const create_order = (z, bundle) => {
 	var fields = bundle.inputData;
+	var from = null;
+	if (fields.from_name && fields.from_street1)
+	{
+		from = {
+			'name': fields.from_name,
+			'street1': fields.from_street1,
+			'street2': fields.from_street2,
+			'city': fields.from_city,
+			'province': fields.from_province,
+			'postal_code': fields.from_postal_code,
+			'country': fields.from_country
+		};
+	}
+
 	var payload = {
 		'order': {
 			'created': fields.created,
@@ -14,15 +28,7 @@ const create_order = (z, bundle) => {
 				'postal_code': fields.consignor_postal_code,
 				'country': fields.consignor_country
 			},
-			'from': {
-				'name': fields.from_name,
-				'street1': fields.from_street1,
-				'street2': fields.from_street2,
-				'city': fields.from_city,
-				'province': fields.from_province,
-				'postal_code': fields.from_postal_code,
-				'country': fields.from_country
-			},
+			'from': from,
 			'line_items': fields.line_items,
 			'override': fields.override,
 			'packing_slip': fields.packing_slip,
@@ -147,14 +153,14 @@ module.exports = {
 				]
 			},
 			{
-				label: 'From',
+				label: 'Return Address',
 				key: 'from',
 				children: [
 					{
 						label: 'Name',
 						key: 'from_name',
 						type: 'string',
-						required: true
+						required: false
 					},
 					{
 						label: 'Street 1',
@@ -280,7 +286,7 @@ module.exports = {
 				]
 			},
 			{
-				label: 'To',
+				label: 'Delivery Address',
 				key: 'to',
 				children: [
 					{

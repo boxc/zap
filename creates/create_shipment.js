@@ -16,6 +16,22 @@ const create_shipment = (z, bundle) => {
 		};
 		line_items.push(line_item);
 	}
+
+	var from = null;
+	if (fields.from_name && fields.from_street1)
+	{
+		from = {
+			'name': fields.from_name,
+			'street1': fields.from_street1,
+			'street2': fields.from_street2,
+			'city': fields.from_city,
+			'province': fields.from_province,
+			'postal_code': fields.from_postal_code,
+			'country': fields.from_country
+		};
+	}
+
+
 	var payload = {
 	    'shipment': {
 	        'comments': fields.comments,
@@ -32,15 +48,7 @@ const create_shipment = (z, bundle) => {
 	        },
 	        'create_label': fields.create_label,
 	        'entry_point': fields.entry_point,
-	        'from': {
-				'name': fields.from_name,
-				'street1': fields.from_street1,
-				'street2': fields.from_street2,
-				'city': fields.from_city,
-				'province': fields.from_province,
-				'postal_code': fields.from_postal_code,
-				'country': fields.from_country
-			},
+	        'from': from,
 	        'height': fields._height,
 	        'length': fields._length,
 	        'line_items': line_items,
@@ -191,14 +199,14 @@ module.exports = {
 				}
 			},
 			{
-				label: 'From',
+				label: 'Return Address',
 				key: 'from',
 				children: [
 					{
 						label: 'Name',
 						key: 'from_name',
 						type: 'string',
-						required: true
+						required: false
 					},
 					{
 						label: 'Street 1',
@@ -358,12 +366,6 @@ module.exports = {
 				helpText: 'The type of shipping service you want to use for this shipment.'
 			},
 			{
-				label: 'Shipping Method',
-				key: 'shipping_method',
-				type: 'string',
-				required: false
-			},
-			{
 				label: 'Signature Confirmation',
 				key: 'signature_confirmation',
 				type: 'boolean',
@@ -371,7 +373,7 @@ module.exports = {
 				helpText: ' Request signature confirmation from the recipient upon delivery. Default is false. Not available for all services or routes. An additional fee may apply.'
 			},
 			{
-				label: 'To',
+				label: 'Delivery Address',
 				key: 'to',
 				children: [
 					{
