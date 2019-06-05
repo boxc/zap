@@ -28,6 +28,7 @@ const create_order = (z, bundle) => {
 				'postal_code': fields.consignor_postal_code,
 				'country': fields.consignor_country
 			},
+			'exception_on_failure': fields.exception_on_failure,
 			'from': from,
 			'line_items': fields.line_items,
 			'override': fields.override,
@@ -230,6 +231,13 @@ module.exports = {
 				key: 'override',
 				type: 'boolean',
 				required: false
+			},
+			{
+				label: 'Exception on Failure',
+				key: 'exception_on_failure',
+				type: 'boolean',
+				required: false,
+				helpText: 'If checked the order will be created in an Exception state when there are address or routing issues.'
 			},
 			{
 				label: 'Packing Slip',

@@ -1,3 +1,7 @@
+## 1.0.2
+
+* (New) Added "Exception on Failure" boolean to orders.
+
 ## 1.0.1
 
 * (Fix) Added/corrected consignor fields for shipments and orders.
