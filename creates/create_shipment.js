@@ -10,7 +10,6 @@ const create_shipment = (z, bundle) => {
 			'hts_code': fields.line_items[i].line_items_hts_code,
 			'origin_description': fields.line_items[i].line_items_origin_description,
 			'quantity': fields.line_items[i].line_items_quantity,
-			'tax': fields.line_items[i].line_items_tax,
 			'value': fields.line_items[i].line_items_value,
 			'weight': fields.line_items[i].line_items_weight
 		};
@@ -31,6 +30,22 @@ const create_shipment = (z, bundle) => {
 		};
 	}
 
+	var cne = null;
+	if (fields.cne_name)
+	{
+		cne = {
+			'name': fields.cne_name,
+			'phone': fields.cne_phone,
+			'email': fields.cne_email,
+			'id': fields.cne_id,
+			'street1': fields.cne_street1,
+			'street2': fields.cne_street2,
+			'city': fields.cne_city,
+			'province': fields.cne_province,
+			'postal_code': fields.cne_postal_code,
+			'country': fields.cne_country
+		};
+	}
 
 	var payload = {
 	    'shipment': {
@@ -46,6 +61,7 @@ const create_shipment = (z, bundle) => {
 	        	'postal_code': fields.consignor_postal_code,
 	        	'country': fields.consignor_country
 	        },
+	        'consignee': cne,
 	        'create_label': fields.create_label,
 	        'entry_point': fields.entry_point,
 	        'from': from,
@@ -316,13 +332,6 @@ module.exports = {
 						helpText: 'The number of units in this line item. Max: 999'
 					},
 					{
-						label: 'Tax',
-						key: 'line_items_tax',
-						type: 'number',
-						required: false,
-						helpText: 'If left blank, will default to 0'
-					},
-					{
 						label: 'Value',
 						key: 'line_items_value',
 						type: 'number',
@@ -364,6 +373,17 @@ module.exports = {
 					'BoxC Priority'
 				],
 				helpText: 'The type of shipping service you want to use for this shipment.'
+			},
+			{
+				label: 'Terms',
+				key: 'terms',
+				type: 'string',
+				required: false,
+				choices: [
+					'DDU',
+					'DDP'
+				],
+				helpText: 'The shipment\'s preferred incoterms. Leave blank to let routing choose for you.'
 			},
 			{
 				label: 'Signature Confirmation',
@@ -440,6 +460,74 @@ module.exports = {
 				]
 			},
 			{
+				label: 'Consignee',
+				key: 'cne',
+				children: [
+					{
+						label: 'Name',
+						key: 'cne_name',
+						type: 'string',
+						required: false,
+						helpText: 'Leave all consignee fields blank to inherit the delivery address'
+					},
+					{
+						label: 'Phone',
+						key: 'cne_phone',
+						type: 'string',
+						required: false
+					},
+					{
+						label: 'Email',
+						key: 'cne_email',
+						type: 'string',
+						required: false
+					},
+					{
+						label: 'Tax ID',
+						key: 'cne_id',
+						type: 'string',
+						required: false
+					},
+					{
+						label: 'Street 1',
+						key: 'cne_street1',
+						type: 'string',
+						required: false
+					},
+					{
+						label: 'Street 2',
+						key: 'cne_street2',
+						type: 'string',
+						required: false
+					},
+					{
+						label: 'City',
+						key: 'cne_city',
+						type: 'string',
+						required: false
+					},
+					{
+						label: 'Province',
+						key: 'cne_province',
+						type: 'string',
+						required: false
+					},
+					{
+						label: 'Postal Code',
+						key: 'cne_postal_code',
+						type: 'string',
+						required: false
+					},
+					{
+						label: 'Country',
+						key: 'cne_country',
+						type: 'string',
+						required: false,
+						helpText: 'Two letter abbreviation.'
+					}
+				]
+			},
+			{
 				label: 'Weight',
 				key: 'weight',
 				type: 'number',
@@ -476,6 +564,18 @@ module.exports = {
 	            province: "GUANGDONG",
 	            postal_code: "518000",
 	            country: "CN"
+	        },
+	        consignee: {
+	            name: "John Smith",
+	            phone: "555-123-456",
+	            email: "john@gmail.com",
+	            id: null,
+	            street1: "108 N Westgate Way",
+	            street2: "Apt 7",
+	            city: "Wylie",
+	            province: "TX",
+	            postal_code: "75098",
+	            country: "US"
 	        },
 	        created: "2015-05-04 08:10:24",
 	        entry_point: "SZXI01",

@@ -1,5 +1,6 @@
 const create_order = (z, bundle) => {
 	var fields = bundle.inputData;
+
 	var from = null;
 	if (fields.from_name && fields.from_street1)
 	{
@@ -11,6 +12,44 @@ const create_order = (z, bundle) => {
 			'province': fields.from_province,
 			'postal_code': fields.from_postal_code,
 			'country': fields.from_country
+		};
+	}
+
+	// Combine duplicate line items by SKU. Typically because of BOGO sales.
+	var line_items = [];
+	for (var i = 0; i < fields.line_items.length; i++)
+	{
+		let exists = false;
+		for (var j = 0; j < line_items.length; j++)
+		{
+			if (fields.line_items[i].sku.toLowerCase() == line_items[j].sku.toLowerCase())
+			{
+				line_items[j].quantity += fields.line_items[i].quantity;
+				exists = true;
+				break;
+			}
+		}
+
+		if (!exists)
+		{
+			line_items.push(fields.line_items[i]);
+		}
+	}
+
+	var cne = null;
+	if (fields.cne_name)
+	{
+		cne = {
+			'name': fields.cne_name,
+			'phone': fields.cne_phone,
+			'email': fields.cne_email,
+			'id': fields.cne_id,
+			'street1': fields.cne_street1,
+			'street2': fields.cne_street2,
+			'city': fields.cne_city,
+			'province': fields.cne_province,
+			'postal_code': fields.cne_postal_code,
+			'country': fields.cne_country
 		};
 	}
 
@@ -28,9 +67,10 @@ const create_order = (z, bundle) => {
 				'postal_code': fields.consignor_postal_code,
 				'country': fields.consignor_country
 			},
+			'consignee': cne,
 			'exception_on_failure': fields.exception_on_failure,
 			'from': from,
-			'line_items': fields.line_items,
+			'line_items': line_items,
 			'override': fields.override,
 			'packing_slip': fields.packing_slip,
 			'partial_fulfillment': fields.partial_fulfillment,
@@ -40,6 +80,7 @@ const create_order = (z, bundle) => {
 				'order_id': fields.shop_order_id
 			},
 			'status': fields.status,
+			'terms': fields.terms,
 			'to': {
 				'company_name': fields.to_company_name,
 				'name': fields.to_name,
@@ -216,6 +257,7 @@ module.exports = {
 						label: 'SKU',
 						key: 'sku',
 						type: 'string',
+						helpText: "Duplicate SKUs will be merged into one line item with quantities added together in BoxC.",
 						required: true
 					},
 					{
@@ -294,6 +336,17 @@ module.exports = {
 				]
 			},
 			{
+				label: 'Terms',
+				key: 'terms',
+				type: 'string',
+				required: false,
+				choices: [
+					'DDU',
+					'DDP'
+				],
+				helpText: 'The shipment\'s preferred incoterms. Leave blank to let routing choose for you.'
+			},
+			{
 				label: 'Delivery Address',
 				key: 'to',
 				children: [
@@ -359,6 +412,74 @@ module.exports = {
 						helpText: 'Two letter abbreviation.'
 					}
 				]
+			},
+			{
+				label: 'Consignee',
+				key: 'cne',
+				children: [
+					{
+						label: 'Name',
+						key: 'cne_name',
+						type: 'string',
+						required: false,
+						helpText: 'Leave all consignee fields blank to inherit the delivery address'
+					},
+					{
+						label: 'Phone',
+						key: 'cne_phone',
+						type: 'string',
+						required: false
+					},
+					{
+						label: 'Email',
+						key: 'cne_email',
+						type: 'string',
+						required: false
+					},
+					{
+						label: 'Tax ID',
+						key: 'cne_id',
+						type: 'string',
+						required: false
+					},
+					{
+						label: 'Street 1',
+						key: 'cne_street1',
+						type: 'string',
+						required: false
+					},
+					{
+						label: 'Street 2',
+						key: 'cne_street2',
+						type: 'string',
+						required: false
+					},
+					{
+						label: 'City',
+						key: 'cne_city',
+						type: 'string',
+						required: false
+					},
+					{
+						label: 'Province',
+						key: 'cne_province',
+						type: 'string',
+						required: false
+					},
+					{
+						label: 'Postal Code',
+						key: 'cne_postal_code',
+						type: 'string',
+						required: false
+					},
+					{
+						label: 'Country',
+						key: 'cne_country',
+						type: 'string',
+						required: false,
+						helpText: 'Two letter abbreviation.'
+					}
+				]
 			}
 		],
 		perform: create_order,
@@ -373,6 +494,18 @@ module.exports = {
 	            province: "GUANGDONG",
 	            postal_code: "518000",
 	            country: "CN"
+	        },
+	        consignee: {
+	            name: "John Doe",
+	            phone: "555-123-4562",
+	            email: "Doe.John@sample.com",
+	            id: null,
+	            street1: "1500 Marilla St",
+	            street2: "Apt 7",
+	            city: "Dallas",
+	            province: "TX",
+	            postal_code: "75201",
+	            country: "US"
 	        },
 	        created: "2016-02-21 11:50:30",
 	        from: {
@@ -423,6 +556,7 @@ module.exports = {
 	            type: "BoxC"
 	        },
 	        status: "Processing",
+	        terms: "DDU",
 	        to: {
 	            company_name: "John's Company",
 	            name: "John Doe",

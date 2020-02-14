@@ -17,8 +17,8 @@ module.exports = {
 	key: 'orders_sent',
 	noun: 'Order',
 	display: {
-		label: 'Order Sent',
-		description: 'Triggers when an order is sent.',
+		label: 'Order Fulfilled',
+		description: 'Triggers when an order is fulfilled.',
 		important: true
 	},
 	operation: {
@@ -35,6 +35,18 @@ module.exports = {
                 postal_code: "518000",
                 country: "CN"
             },
+            to: {
+                name: "John Doe",
+                email: "Doe.John@sample.com",
+                phone: "555-123-4562",
+                id: "123-456-7829",
+                street1: "1500 Marilla St",
+                street2: "Apt 7",
+                city: "Dallas",
+                province: "TX",
+                postal_code: "75201",
+                country: "US"
+            },
             created: "2016-02-23 14:42:59",
             from: {
                 name: "My Company Name",
@@ -45,6 +57,18 @@ module.exports = {
                 postal_code: "91013",
                 country: "US"
             },
+            fulfillments: [{
+                created: "2018-07-31 05:26:07",
+                fulfilled: "2018-07-31 16:17:18",
+                fulfillment_fee: 1.5,
+                id: 419666,
+                packed: "2018-07-31 15:15:15",
+                service: "BoxC Priority",
+                shipment_id: 1240891,
+                shipping_cost: 5.04,
+                tracking_url: "https://www.boxc.com/h/track?id=9200190181596700475512",
+                tracking_number: "9200190181596700475512"
+            }],
             id: 20189,
             line_items: [
                 {
